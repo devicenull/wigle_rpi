@@ -56,7 +56,7 @@ logger.info('Internet connectivity found, looking for kismet logs')
 for filename in glob.glob('/var/log/kismet/*.kismet'):
     logger.debug(filename)
 
-    proc = subprocess.Popen(['kismetdb_to_wiglecsv', '--in', filename, '--out', '-', '--rate-limit', '3'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    proc = subprocess.Popen(['kismetdb_to_wiglecsv', '--in', filename, '--out', '-', '--rate-limit', '3', '--exclude', wigleinfo['exclude']], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     compressed = io.BytesIO()
     with gzip.GzipFile(fileobj=compressed, mode='wb') as out_f:
             shutil.copyfileobj(proc.stdout, out_f)
