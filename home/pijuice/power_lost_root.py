@@ -66,6 +66,11 @@ for filename in glob.glob('/var/log/kismet/*.kismet'):
     if proc.returncode != 0:
         logger.info('wigle2csv returned %i, not uploading file' % proc.returncode)
         shutil.move(filename, '/home/invalidkismet/')
+        try:
+            # This file may or may not exist
+            shutil.move(filename+'-journal', '/home/invalidkismet/')
+        except:
+            pass
         continue
 
     compressed.seek(0)
