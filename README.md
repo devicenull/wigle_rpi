@@ -9,3 +9,8 @@ Fairly hacky setup wise, unlikely to work for anyone else without modification. 
 * Wifi Adapter for scanning on wifi1
 * PIJuice HAT + configure to execute `/home/pijuice/power_lost.sh` on USB power loss
 * log2ram installed, setup with a 1G /var/log size, and rsync enabled
+
+
+Pi rsync's kismet logs over to htpc, where they're processed + uploaded.
+
+Doing processing/uploads from the pi made debugging pretty hard (it's all the way out in the car!)

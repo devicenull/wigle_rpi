@@ -50,52 +50,18 @@ if not internet_up:
     subprocess.call(['halt'])
     sys.exit(0)
 
-requests_auth = requests.auth.HTTPBasicAuth(wigleinfo['username'], wigleinfo['password'])
 
-logger.info('Internet connectivity found, looking for kismet logs')
-for filename in glob.glob('/var/log/kismet/*.kismet'):
-    logger.debug(filename)
-
-    proc = subprocess.Popen(['kismetdb_to_wiglecsv', '--in', filename, '--out', '-', '--rate-limit', '3', '--exclude', wigleinfo['exclude']], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-    compressed = io.BytesIO()
-    with gzip.GzipFile(fileobj=compressed, mode='wb') as out_f:
-            shutil.copyfileobj(proc.stdout, out_f)
-    for line in proc.stderr:
-            logger.debug(line)
-    proc.wait()
-    if proc.returncode != 0:
-        logger.info('wigle2csv returned %i, not uploading file' % proc.returncode)
-        try:
-            shutil.move(filename, '/home/invalidkismet/')
-        except:
-            os.remove(filename)
-
-        try:
-            # This file may or may not exist
-            shutil.move(filename+'-journal', '/home/invalidkismet/')
-        except:
-            pass
-
-        # if moving it failed, try deleteing it!
-        try:
-            os.remove(filename+'-journal')
-        except:
-            pass
-        continue
-
-    compressed.seek(0)
-    with open('/tmp/last_upload.gz', 'wb') as f:
-            shutil.copyfileobj(compressed, f)
-    compressed.seek(0)
-        
-    try:
-        result = requests.post('https://api.wigle.net/api/v2/file/upload', auth=requests_auth, files={'file': ('upload.csv.gz', compressed)}, data={"donate": True })
-        result.raise_for_status()
-        logger.info('Upload completed, deleting file')
-        logger.info(result.text)
+logger.info('Copying logs to HTPC')
+proc = subprocess.Popen(['/usr/bin/rsync', '-rt', '/var/log/kismet/', 'rsync://wiglepi@htpc.meltbeforefailure.com/wiglepi', '--password-file=/etc/rsync.password'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+(stdout, stderr) = proc.communicate()
+logger.debug(stdout)
+logger.debug(stderr)
+if proc.returncode == 0:
+    for filename in glob.glob('/var/log/kismet/*.kismet*'):
+        logger.debug('Deleting %s' % filename)
         os.remove(filename)
-    except requests.exceptions.RequestException as e:
-        logger.exception(e)
+else:
+    logger.info('Rsync returned non-zero, not deleting logs')
 
 logger.info('Shutting down')
 subprocess.call(['halt'])
