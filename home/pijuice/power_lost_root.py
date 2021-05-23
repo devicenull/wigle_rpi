@@ -24,9 +24,6 @@ console.setFormatter(logging.Formatter('%(levelname)-8s %(message)s'))
 logging.getLogger('').addHandler(console)
 logger = logging.getLogger('')
 
-with open('/home/pijuice/wigle.json', 'r') as f:
-    wigleinfo = json.load(f)
-
 logger.info('Pi lost power')
 
 logger.info('Configuring auto power on')
@@ -52,7 +49,7 @@ if not internet_up:
 
 
 logger.info('Copying logs to HTPC')
-proc = subprocess.Popen(['/usr/bin/rsync', '-rt', '/var/log/kismet/', 'rsync://wiglepi@htpc.meltbeforefailure.com/wiglepi', '--password-file=/etc/rsync.password'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+proc = subprocess.Popen(['/usr/bin/rsync', '-rt', '--progress', '/var/log/kismet/', 'rsync://wiglepi@htpc.meltbeforefailure.com/wiglepi', '--password-file=/etc/rsync.password'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 (stdout, stderr) = proc.communicate()
 logger.debug(stdout)
 logger.debug(stderr)

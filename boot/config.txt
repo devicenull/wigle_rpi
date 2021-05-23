@@ -51,9 +51,11 @@ dtparam=i2c_arm=on
 #dtoverlay=lirc-rpi
 
 # see https://github.com/PiSupply/PiJuice/issues/350
-dtoverlay=i2c-bcm2708
+#dtoverlay=i2c-bcm2708
 # RTC on PiJuice
 dtoverlay=i2c-rtc,ds1339
+
+dtoverlay=uart2
 
 # Additional overlays and parameters are documented /boot/overlays/README
 
@@ -67,3 +69,4 @@ max_framebuffers=2
 
 [all]
 #dtoverlay=vc4-fkms-v3d
+enable_uart=1

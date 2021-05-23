@@ -1,0 +1,8 @@
+[Match]
+MACAddress=dc:4e:f4:06:d9:33
+# Without this, systemd tries to rename wlan0mon to scanning0, which ends up making
+# it renamed to rename5 :facepalm:
+OriginalName=wlan[0-9]
+
+[Link]
+Name=scanning0
