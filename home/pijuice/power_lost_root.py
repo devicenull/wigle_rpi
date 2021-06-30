@@ -9,6 +9,7 @@ import os
 import shutil
 import subprocess
 import sys
+import time
 
 import requests
 from pijuice import PiJuice
@@ -24,13 +25,20 @@ console.setFormatter(logging.Formatter('%(levelname)-8s %(message)s'))
 logging.getLogger('').addHandler(console)
 logger = logging.getLogger('')
 
+os.environ['PATH'] = '/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin'
+
 logger.info('Pi lost power')
 
-logger.info('Configuring auto power on')
-pj=PiJuice(1,0x14)
-pj.power.SetWakeUpOnCharge(0.0)
+#logger.info('Configuring auto power on')
+#pj=PiJuice(1,0x14)
+#pj.power.SetWakeUpOnCharge(0.0)
 
 subprocess.call(['service', 'kismet', 'stop'])
+
+#logger.info('Disabling scanning interfaces');
+#for device in ['scanning1', 'scanning2', 'scanning3']:
+#    subprocess.call(['ip', 'link', 'set', device, 'down'])
+#    subprocess.call(['ip', 'link', 'set', device+'mon', 'down'])
 
 logger.info('Checking for internet connectivity')
 internet_up = False
@@ -49,7 +57,7 @@ if not internet_up:
 
 
 logger.info('Copying logs to HTPC')
-proc = subprocess.Popen(['/usr/bin/rsync', '-rt', '--progress', '/var/log/kismet/', 'rsync://wiglepi@htpc.meltbeforefailure.com/wiglepi', '--password-file=/etc/rsync.password'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+proc = subprocess.Popen(['/usr/bin/rsync', '-rt', '/var/log/kismet/', 'rsync://wiglepi@htpc.meltbeforefailure.com/wiglepi', '--password-file=/etc/rsync.password'], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 (stdout, stderr) = proc.communicate()
 logger.debug(stdout)
 logger.debug(stderr)
@@ -59,6 +67,11 @@ if proc.returncode == 0:
         os.remove(filename)
 else:
     logger.info('Rsync returned non-zero, not deleting logs')
+
+time.sleep(5)
+
+logger.info('Syncing disks')
+subprocess.call(['sync'])
 
 logger.info('Shutting down')
 subprocess.call(['halt'])
