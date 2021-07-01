@@ -53,7 +53,8 @@ dtparam=i2c_arm=on
 # see https://github.com/PiSupply/PiJuice/issues/350
 #dtoverlay=i2c-bcm2708
 # RTC on PiJuice
-dtoverlay=i2c-rtc,ds1339
+#dtoverlay=i2c-rtc,ds1339
+dtoverlay=i2c-rtc,ds3231
 
 dtoverlay=uart2
 
