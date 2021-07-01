@@ -7,7 +7,7 @@ echo 1546 0501 > /sys/bus/usb-serial/drivers/ftdi_sio/new_id
 sleep 1
 /bin/stty -F /dev/ttyUSB0 clocal raw speed 460800
 
-/usr/local/sbin/gpsd -n -b /dev/ttyUSB0 --speed 460800
+/usr/local/sbin/gpsd -n /dev/ttyUSB0 --speed 460800
 sleep 5
 /bin/systemctl start kismet
 /bin/systemctl start ntp

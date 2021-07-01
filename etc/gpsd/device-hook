@@ -1,0 +1,10 @@
+#!/bin/bash
+
+if [ "$2" == "ACTIVATE" ]; then
+	export UBXOPTS='-P 32 -w0'
+
+	# Tell the GPS we're in a car and to update more then once a second
+	/usr/local/bin/ubxtool -z CFG-NAVSPG-DYNMODEL,4 -z CFG-RATE-MEAS,50
+	echo "hello"
+fi
+
